@@ -1,6 +1,15 @@
 import './assets/main.css'
 
-import { createApp } from 'vue'
+import routes from './routes'
 import App from './App.vue'
+import viteSSR, { ClientOnly } from 'vite-ssr'
 
-createApp(App).mount('#app')
+export default viteSSR(
+    App,
+    { routes },
+    async ({ app, initialState }) => {
+        app.component(ClientOnly.name, ClientOnly)
+        const response = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+        initialState.myData = await response.json()
+    }
+)
